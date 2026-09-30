@@ -21,7 +21,7 @@
 
 #include<limits.h>
 
-#include<opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
 
@@ -222,6 +222,7 @@ namespace ORB_SLAM3
 
     int ORBmatcher::SearchByBoW(KeyFrame* pKF,Frame &F, vector<MapPoint*> &vpMapPointMatches)
     {
+        int threshold = 75;
         const vector<MapPoint*> vpMapPointsKF = pKF->GetMapPointMatches();
 
         vpMapPointMatches = vector<MapPoint*>(F.N,static_cast<MapPoint*>(NULL));
@@ -324,7 +325,7 @@ namespace ORB_SLAM3
 
                     }
 
-                    if(bestDist1<=TH_LOW)
+                    if(bestDist1<=threshold)
                     {
                         if(static_cast<float>(bestDist1)<mfNNratio*static_cast<float>(bestDist2))
                         {
@@ -354,7 +355,7 @@ namespace ORB_SLAM3
                             nmatches++;
                         }
 
-                        if(bestDist1R<=TH_LOW)
+                        if(bestDist1R<=threshold)
                         {
                             if(static_cast<float>(bestDist1R)<mfNNratio*static_cast<float>(bestDist2R) || true)
                             {

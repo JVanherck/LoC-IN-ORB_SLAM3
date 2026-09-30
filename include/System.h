@@ -26,7 +26,7 @@
 #include<stdlib.h>
 #include<string>
 #include<thread>
-#include<opencv2/core/core.hpp>
+#include<opencv2/opencv.hpp>
 
 #include "Tracking.h"
 #include "FrameDrawer.h"
@@ -102,7 +102,7 @@ public:
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
-    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true, const int initFr = 0, const string &strSequence = std::string());
+    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true, const int initFr = 0, const string &strSequence = std::string(), const std::string& fileToLoad = std::string(), bool allowMultipleMaps = true);
 
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
@@ -139,6 +139,7 @@ public:
     // This function must be called before saving the trajectory.
     void Shutdown();
     bool isShutDown();
+    bool AllShutdown();
 
     // Save camera trajectory in the TUM RGB-D dataset format.
     // Only for stereo and RGB-D. This method does not work for monocular.
@@ -185,6 +186,12 @@ public:
     void ChangeDataset();
 
     float GetImageScale();
+
+    Atlas* GetAtlas() {
+        return mpAtlas;
+    }
+
+    void Save(std::string filename);
 
 #ifdef REGISTER_TIMES
     void InsertRectTime(double& time);
@@ -262,6 +269,8 @@ private:
     string mStrVocabularyFilePath;
 
     Settings* settings_;
+
+    bool mbAllowMultipleMaps;
 };
 
 }// namespace ORB_SLAM
