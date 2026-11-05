@@ -152,6 +152,11 @@ public:
     list<KeyFrame*> mlpReferences;
     list<double> mlFrameTimes;
     list<bool> mlbLost;
+    // Inlier map-point matches used for pose estimation on the corresponding
+    // frame in mlRelativeFramePoses (mnMatchesInliers at push time), kept in
+    // lockstep with the other lists above so SaveTrajectoryTUM can dump a
+    // per-line-aligned "matched features" companion file.
+    list<int> mlMatchesInliers;
 
     // frames with estimated pose
     int mTrackedFr;

@@ -585,7 +585,7 @@ bool System::AllShutdown()
     return shutDown && mpLocalMapper->isFinished() && mpLoopCloser->isFinished();
 }
 
-void System::SaveTrajectoryTUM(const string &filename)
+void System::SaveTrajectoryTUM(const string &filename, const string &featuresFilename)
 {
     cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;
 
@@ -619,6 +619,12 @@ void System::SaveTrajectoryTUM(const string &filename)
     ofstream f;
     f.open(filename.c_str());
     f << fixed;
+
+    const bool writeFeatures = !featuresFilename.empty();
+    ofstream ff;
+    if (writeFeatures) {
+        ff.open(featuresFilename.c_str());
+    }
 
     // Frame pose is stored relative to its reference keyframe (which is optimized by BA and pose graph).
     // We need to get first the keyframe pose and then concatenate the relative transformation.
@@ -685,8 +691,9 @@ void System::SaveTrajectoryTUM(const string &filename)
     list<ORB_SLAM3::KeyFrame*>::iterator lRit = mpTracker->mlpReferences.begin();
     list<double>::iterator lT = mpTracker->mlFrameTimes.begin();
     list<bool>::iterator lbL = mpTracker->mlbLost.begin();
+    list<int>::iterator lMI = mpTracker->mlMatchesInliers.begin();
     for(auto lit=mpTracker->mlRelativeFramePoses.begin(),
-        lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++, lbL++)
+        lend=mpTracker->mlRelativeFramePoses.end();lit!=lend;lit++, lRit++, lT++, lbL++, lMI++)
     {
         if(*lbL)
             continue;
@@ -718,8 +725,14 @@ void System::SaveTrajectoryTUM(const string &filename)
         Eigen::Quaternionf q = Twc.unit_quaternion();
 
         f << setprecision(6) << *lT << " " <<  setprecision(9) << twc(0) << " " << twc(1) << " " << twc(2) << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+        if (writeFeatures) {
+            ff << *lMI << endl;
+        }
     }
     f.close();
+    if (writeFeatures) {
+        ff.close();
+    }
     cout << endl << "trajectory saved!" << endl;
 }
 

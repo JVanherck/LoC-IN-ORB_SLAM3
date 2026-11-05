@@ -145,7 +145,10 @@ public:
     // Only for stereo and RGB-D. This method does not work for monocular.
     // Call first Shutdown()
     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
-    void SaveTrajectoryTUM(const string &filename);
+    // When featuresFilename is non-empty, also writes one line per saved
+    // frame with that frame's inlier map-point match count, in the same
+    // order and with the same frames skipped as filename's pose output.
+    void SaveTrajectoryTUM(const string &filename, const string &featuresFilename = string());
 
     // Save keyframe poses in the TUM RGB-D dataset format.
     // This method works for all sensor input.
